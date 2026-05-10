@@ -4,6 +4,7 @@ using System.Linq;
 using FinanceManager.Domain;
 using FinanceManager.Exceptions;
 using FinanceManager.DataAccess;
+using FinanceManager.Validation;
 
 namespace FinanceManager.Services
 {
@@ -22,8 +23,11 @@ namespace FinanceManager.Services
 
         public void AddCategory(Category category)
         {
-            if (string.IsNullOrWhiteSpace(category.Name))
-                throw new FinanceException("Category name cannot be empty.");
+            var validationErrors = Validator.Validate(category);
+            if (validationErrors.Any())
+            {
+                throw new FinanceException(string.Join("\n", validationErrors));
+            }
 
             _categoryRepo.Add(category);
         }
@@ -32,8 +36,11 @@ namespace FinanceManager.Services
 
         public void AddTransaction(Transaction transaction)
         {
-            if (transaction.Amount <= 0)
-                throw new FinanceException("Transaction amount must be greater than zero.");
+            var validationErrors = Validator.Validate(transaction);
+            if (validationErrors.Any())
+            {
+                throw new FinanceException(string.Join("\n", validationErrors));
+            }
 
             if (transaction.Type == TransactionType.Expense)
             {

@@ -1,24 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using FinanceManager.Validation;
 
 namespace FinanceManager.Domain
 {
     public class Transaction : BaseEntity
     {
-        public decimal Amount { get; set; }
-        public DateTime Date { get; set; }
-        public string Comment { get; set; }
-        public TransactionType Type { get; set; }
         public Guid CategoryId { get; set; }
 
-        public Transaction(decimal amount, DateTime date, string comment, TransactionType type, Guid categoryId)
+        public TransactionType Type { get; set; }
+
+        [PositiveValue("The transaction amount must be greater than zero.")]
+        public decimal Amount { get; set; }
+
+        public DateTime Date { get; set; }
+
+        [RequiredString("Add a description for the transaction.")]
+        public string Description { get; set; }
+
+        public Transaction(Guid categoryId, TransactionType type, decimal amount, string description)
         {
-            Amount = amount;
-            Date = date;
-            Comment = comment;
-            Type = type;
             CategoryId = categoryId;
+            Type = type;
+            Amount = amount;
+            Date = DateTime.Now;
+            Description = description;
         }
     }
 }
